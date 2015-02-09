@@ -222,7 +222,7 @@
                 created : new Date(listing.creation_tsz*1000),
                 avatar:''
             }
-            var aWeekAgo = new Date().getTime() - (7 * 24 * 60 * 60 * 1000)
+            var aWeekAgo = new Date().getTime() - (7 * 24 * 60 * 60 * 1000);
 
             if ((this.filters&&this.filters.match(/w/) && listing.blazin.created<aWeekAgo)||
                 (this.filters&&this.filters.match(/i/) && listing.Images.length<5)) {
@@ -255,6 +255,32 @@
             
             // create a DOM node from invoking the template in the context of listing (this should cash any images before adding to the page)
             listing.node = $(this.templates.listing(listing));
+            var myIndex = (this.active.length)
+            
+            var self = this
+            listing.node.click(function() {
+                // console.log(this.className)
+                if (this.className.match('showDescription')) {
+                    return
+                }
+                if (this.className.match('center')) {
+                    self.showDescription();
+                    return
+                }
+                var oldListing = self.active[self.currentListing]
+                $('#banner-' + oldListing.listing_id).attr('src' , oldListing.blazin.avatar);
+
+                self.currentListing = myIndex
+                self.reDraw()
+
+                BlazinEtsy.Router.navigate( 'listing/' + listing.listing_id + '/show' , {trigger: false});
+
+                if (self.currentListing+4 > self.active.length)
+                    self.lazyLoad(1);
+
+                $('.bannerFull').removeClass('bannerFull');
+                
+            })
 
             this.active.forEach(function(active) {
                 
@@ -268,11 +294,7 @@
 
             this.active.push(listing);
 
-            // listing.indexOf = this.active.length-1
 
-            // listing.node.click(function(){   // needs work... the indexOf doesn't look right
-            //     console.log(listing)
-            // });
 
             return listing;
         },
@@ -329,7 +351,7 @@
 
                     if( v && v.node) 
                         $('#quickView')
-                            .append(v.node.addClass('right'));
+                            .append(v.node);
 
                 });
 
@@ -378,7 +400,7 @@
             var self = this;
             
             ///////////////
-            ///////////////
+            //
 
             $('.thumb').hide().click(function() {
                 
@@ -406,31 +428,85 @@
                     });
             });
 
-            ///////////////
+            //
             ///////////////
 
-            // this needs to go. causes timing issues resulting in a throttle of the arrow keys :(
-            $('#quickView').css({left:'+='+dir+'px'})
+
+            $('#quickView').css({zIndex:0})
+            this.active.forEach(function(obj , index) {
+
+                var node = obj.node;
             
-            $('.listing').each(function(index){
-                
-                var node = $(this);
+                ///////////////
+                //
+                $('#banner-' + node.attr('listing')).off().on('click' ,function(event) {
 
-                node.removeClass('left right center showDescription')
-                    .css({zIndex:0});
+                    if (!this.parentNode.parentNode.className.match('showDescription'))//||
+                        return
 
-                if (index>self.currentListing)
+                    event.stopPropagation();
+
+                    $('.bannerBack.' + node.attr('listing')).toggleClass('bannerFull');
+                    $(this).toggleClass('bannerFull');
+                });
+                //
+                ///////////////
+
+                // hopefully only accessing only 11 cards at a time will reduce resource seepage (If I have a milkshake...)
+                if ((index>self.currentListing && index-self.currentListing<=5) ||
+                    (index<self.currentListing && self.currentListing-index<=5) ||
+                    (index==self.currentListing))
+                        node.removeClass('left right center showDescription')
+                            .css({zIndex:0});
+
+                if (index>self.currentListing && index-self.currentListing<=5) {
+
                     node.addClass('right')
-                        .css({zIndex:-index});
+                        .css({
+                            zIndex:-index ,
+                        })
+                        .css({
+                            opacity:1,
+                            position:'absolute' ,
+                            left: 70 - self.currentListing*10 + index*10 + '%'
+                        });
 
-                if (index<self.currentListing)
-                    node.addClass('left');
+                    // fade in one more if any less than 3 that are showing
+                    if(index-self.currentListing>4)
+                        node.css({opacity:0});
+                }
 
-                if(index==self.currentListing) {
+                if (index<self.currentListing && self.currentListing-index<=5) {
                     
+                    node.removeClass('left right center showDescription')
+                        .css({zIndex:0});
+
+                    // slide over
+                    node.addClass('left')
+                        .css({
+                            opacity:1,
+                            position:'absolute' ,
+                            left: 45 - self.currentListing*10 + index*10 + '%'
+                        });
+
+                    // fade out the last one if any greater than 3 that are showing
+                    if(self.currentListing-index>4)
+                        node.css({opacity:0});
+                        
+                }
+
+                if (index===self.currentListing) {
+                    
+                    node.removeClass('left right center showDescription')
+                        .css({zIndex:0});
+
                     self.Router.navigate("listing/" + node.attr('listing') , {trigger: false});
 
-                    node.addClass('center');
+                    node.addClass('center')
+                        .css({
+                            position:'absolute' ,
+                            left:''
+                        });
                 }
             })
 
@@ -453,6 +529,23 @@
         },
         createEvents : function(){
             
+            $(function() {
+                // Bind the swipeHandler callback function to the swipe event on div.box
+                $( "body" )
+                .on( "swipeleft", function( event ) {
+
+                    self.currentListing++;
+                    self.reDraw();                    // $( event.target ).addClass( "swipe" );
+                    if (self.currentListing+4 > self.active.length)
+                        self.lazyLoad(1);
+                })
+                .on( "swiperight", function swipeHandler( event ){
+
+                    self.currentListing--;
+                    self.reDraw();                    // $( event.target ).addClass( "swipe" );
+                });
+            });
+
             var self = this;
             
             $( '*' ).keydown(function() {
@@ -470,7 +563,7 @@
                     if(self.currentListing<1)
                         return;
                     self.currentListing--;
-                    self.reDraw(200);
+                    self.reDraw();
 
                     event.preventDefault();
                 }
@@ -488,7 +581,7 @@
                 if (event.which === 39) {
 
                     self.currentListing++;
-                    self.reDraw(-200);
+                    self.reDraw();
 
                     if (self.currentListing+4 > self.active.length)
                         self.lazyLoad(1);
@@ -506,11 +599,14 @@
                     
                     event.preventDefault();
                 }
-                if (event.which === 37 || event.which === 39 || event.which === 40)
+                if (event.which === 37 || event.which === 39 || event.which === 40){
                     // reset banner in case it was changed while viewing thumbs
                     $('#banner-' + listing.attr('listing')).attr('src' , listing.attr('banner'));
+                    $('.bannerFull').removeClass('bannerFull');
 
-            } , 500 , {trailing:false}));
+                }
+
+            } , 200 , {trailing:false}));
         }
 
     }

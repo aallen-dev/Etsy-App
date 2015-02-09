@@ -21,6 +21,8 @@ function app(){
         document.querySelector("html").style.opacity = 1;
 
 
+        
+        // alert($.swipeLeft)//(function(){alert()})
 
         $( "#search" ).submit(function( event ) {
             var filters = [

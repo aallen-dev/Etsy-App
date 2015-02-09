@@ -1,10 +1,12 @@
 <p class="listing" listing="<%=listing_id%>" banner="<%=blazin.avatar%>">
+     <span class="close">x</span>
      <span class="content">
           <b>
                <%= Shop.title %>
           </b>
           <br>
-          <img id="banner-<%=listing_id%>" src="<%=blazin.avatar%>"  title="<%=title%>"  listing="<%=listing_id%>">
+          <span class="bannerBack <%=listing_id%>">&nbsp;</span>
+          <img id="banner-<%=listing_id%>" class="banners" src="<%=blazin.avatar%>"  title="<%=title%>"  listing="<%=listing_id%>">
           <span class="message <%=listing_id%>">loading</span>
           <br>
           <% _.each(blazin.img , function(urls) { %>
