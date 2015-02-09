@@ -1,0 +1,21 @@
+<p class="listing" listing="<%=listing_id%>" banner="<%=blazin.avatar%>">
+     <span class="content">
+          <b>
+               <%= Shop.title %>
+          </b>
+          <br>
+          <img id="banner-<%=listing_id%>" src="<%=blazin.avatar%>"  title="<%=title%>"  listing="<%=listing_id%>">
+          <span class="message <%=listing_id%>">loading</span>
+          <br>
+          <% _.each(blazin.img , function(urls) { %>
+          <img class="thumb <%=listing_id%>" big="<%= urls[urls.length-1] %>" src="<%= urls[0] %>"  listing="<%=listing_id%>">
+          <% }) %>
+          <span class="description" listing="<%=listing_id%>">
+               <%=description%>
+               <br><br><br>
+               created
+               <br>
+               <%=(new Date(blazin.created)).toString()%>
+          </span>
+     </span>
+</p>
