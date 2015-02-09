@@ -533,14 +533,14 @@
                 // Bind the swipeHandler callback function to the swipe event on div.box
                 $( "body" )
                 .on( "swipeleft", function( event ) {
-
+                    event.preventDefault();
                     self.currentListing++;
                     self.reDraw();                    // $( event.target ).addClass( "swipe" );
                     if (self.currentListing+4 > self.active.length)
                         self.lazyLoad(1);
                 })
                 .on( "swiperight", function swipeHandler( event ){
-
+                    event.preventDefault();
                     self.currentListing--;
                     self.reDraw();                    // $( event.target ).addClass( "swipe" );
                 });
