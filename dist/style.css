@@ -1095,7 +1095,7 @@ body {
       width: 65%; }
     body p.center {
       left: 25%; } }
-  @media only screen and (max-width: 450px) {
+  @media only screen and (max-width: 645px) {
     body p {
       width: 85%; }
     body p.center {
@@ -1104,5 +1104,9 @@ body {
       max-width: 95%;
       max-height: 30%; }
     body .thumb {
+      display: none !important; }
+    body p.right {
+      display: none !important; }
+    body p.left {
       display: none !important; } }
 

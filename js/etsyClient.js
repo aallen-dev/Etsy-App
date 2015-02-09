@@ -531,7 +531,7 @@
             
             $(function() {
                 // Bind the swipeHandler callback function to the swipe event on div.box
-                $( "body" )
+                $( "*" )
                 .on( "swipeleft", function( event ) {
                     event.preventDefault();
                     self.currentListing++;

@@ -315,7 +315,7 @@ body {
             left:25%
         }
     }
-    @media only screen and (max-width: 450px){
+    @media only screen and (max-width: 645px){
 
         p{
             width: 85%;
@@ -332,6 +332,15 @@ body {
         }
         .thumb{
             display:none !important
+        }
+        p.right {
+            display:none !important
+
+        } 
+        p.left {
+    
+            display:none !important
+
         }
 
     }
