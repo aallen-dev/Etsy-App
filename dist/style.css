@@ -868,6 +868,7 @@ body {
   -webkit-transition: opacity .25s ease;
           transition: opacity .25s ease;
   font-family: lucida Console, monospace;
+  overflow: hidden;
   background-color: #333; }
   body p {
     background-color: #eee;
