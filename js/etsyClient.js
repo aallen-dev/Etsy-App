@@ -368,7 +368,7 @@
                     $('#banner-' + node.attr('listing'))
                         .off()
                         .on(self.touchstartEventName ,function(event) {
-                            alert(self.touchstartEventName)
+                            alert(self.touchstartEventName+'s')
                             if (!this.parentNode.parentNode.className.match('showDescription'))//||
                                 return
 
