@@ -258,8 +258,9 @@
             var myIndex = (this.active.length)
             
             var self = this
-            listing.node.on('mousedown , touchstart' , function() {
+            listing.node.on('mousedown , touchstart' , function(event) {
                 // console.log(this.className)
+                event.stopImmediatePropagation();
                 if (this.className.match('showDescription')) {
                     return
                 }
@@ -306,7 +307,9 @@
                     self.reDraw();                    // $( event.target ).addClass( "swipe" );
                 });
 
-                $('.thumb').off().on('mousedown , touchstart' , function() {
+                $('.thumb').off().on('mousedown , touchstart' , function(event) {
+                
+                    event.stopImmediatePropagation();
                     
                     // do a little cashing so we don't keep looking up this info.
                     var thumb   = $(this) ,
@@ -349,10 +352,12 @@
                     var node = active.node
                     $('#banner-' + node.attr('listing')).off().on('mousedown , touchstart' ,function(event) {
 
+                        event.stopImmediatePropagation();
                         if (!this.parentNode.parentNode.className.match('showDescription'))//||
                             return
 
-                        event.stopPropagation();
+                        console.log('s')
+                        // event.stopPropagation();
 
                         $('.bannerBack.' + node.attr('listing')).toggleClass('bannerFull');
                         $(this).toggleClass('bannerFull');
