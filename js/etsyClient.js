@@ -20,6 +20,20 @@
 
         });
 
+        var getAllEvents = function (element) {
+            var result = [];
+            for (var key in element) {
+                if (key.indexOf('on') === 0) {
+                    result.push(key);
+                }
+            }
+            return result.join('');
+        }
+        var events = getAllEvents(document)
+        // console.log(events.match('ontouchstart'))
+
+        this.touchstartEventName = events.match('ontouchstart')?'touchstart':'mousedown';
+
         this.pagination = {
             
             perPage : 3 ,
@@ -258,9 +272,8 @@
             var myIndex = (this.active.length)
             
             var self = this
-            listing.node.on('mousedown , touchstart' , function(event) {
+            listing.node.on(self.touchstartEventName , function(event) {
                 // console.log(this.className)
-                event.stopImmediatePropagation();
                 if (this.className.match('showDescription')) {
                     return
                 }
@@ -268,6 +281,7 @@
                     self.showDescription();
                     return
                 }
+                event.stopImmediatePropagation();
                 var oldListing = self.active[self.currentListing]
                 $('#banner-' + oldListing.listing_id).attr('src' , oldListing.blazin.avatar);
 
@@ -307,7 +321,7 @@
                     self.reDraw();                    // $( event.target ).addClass( "swipe" );
                 });
 
-                $('.thumb').off().on('mousedown , touchstart' , function(event) {
+                $('.thumb').off().on(self.touchstartEventName , function(event) {
                 
                     event.stopImmediatePropagation();
                     
@@ -335,7 +349,7 @@
                         });
                 });
                 
-                $('.close').off().on('mousedown , touchstart' , function(event){
+                $('.close').off().on(self.touchstartEventName , function(event){
                     console.log('closeit',event)
                     // if(!listing)return;
                     event.stopImmediatePropagation();
@@ -348,20 +362,24 @@
 
                 ///////////////
                 //
+                // console.log(document.getElementById('quickView').ontouchstart)
                 self.active.forEach(function(active) {
                     var node = active.node
-                    $('#banner-' + node.attr('listing')).off().on('mousedown , touchstart' ,function(event) {
+                    $('#banner-' + node.attr('listing'))
+                        .off()
+                        .on(self.touchstartEventName ,function(event) {
+                            // console.log(event)
+                            if (!this.parentNode.parentNode.className.match('showDescription'))//||
+                                return
 
-                        event.stopImmediatePropagation();
-                        if (!this.parentNode.parentNode.className.match('showDescription'))//||
-                            return
+                            event.stopImmediatePropagation();
 
-                        console.log('s')
-                        // event.stopPropagation();
+                            console.log('s')
+                            // event.stopPropagation();
 
-                        $('.bannerBack.' + node.attr('listing')).toggleClass('bannerFull');
-                        $(this).toggleClass('bannerFull');
-                    });
+                            $('.bannerBack.' + node.attr('listing')).toggleClass('bannerFull');
+                            $(this).toggleClass('bannerFull');
+                        });
                 })
                 //
                 ///////////////
