@@ -1043,7 +1043,12 @@ body {
     z-index: 0; }
   body #search {
     display: inline-block;
-    margin-left: 40%; }
+    position: absolute;
+    width: 250px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+            transform: translateX(-50%); }
   body #searchSubmit {
     visibility: hidden; }
   body #keywords {
