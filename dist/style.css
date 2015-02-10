@@ -817,6 +817,9 @@ abbr[title]:hover {
 /**
  * GRIDS
  */
+p + p {
+  text-indent: 0em; }
+
 .grid {
   width: 100%;
   display: block;
@@ -1003,10 +1006,11 @@ body {
             box-shadow: 0px 0px 15px #000; }
     body p.center.showDescription .content {
       display: block;
-      height: 90%;
+      height: 85%;
       width: 100%;
-      border: 1px solid #333;
-      overflow: auto; }
+      overflow: auto;
+      border-top: 1px solid #333;
+      border-bottom: 1px solid #333; }
     body p.center.showDescription .description {
       display: block; }
     body p.center.showDescription .thumbsLeft {
@@ -1035,7 +1039,8 @@ body {
     width: 100%;
     height: 80%;
     left: 0%;
-    top: 20%; }
+    top: 20%;
+    z-index: 0; }
   body #search {
     display: inline-block;
     margin-left: 40%; }
@@ -1085,28 +1090,56 @@ body {
   body .message.loading {
     display: inline-block; }
   body .close {
-    display: inline-block;
+    -webkit-transition: all .4s ease;
+            transition: all .4s ease;
     position: absolute;
-    top: 3px;
     right: 2%;
-    z-index: 99; }
+    z-index: 99;
+    opacity: 0;
+    font-family: arial;
+    color: red;
+    background-color: #fdd; }
+  body .close.showDescription {
+    opacity: 1;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #944;
+    text-align: center !important;
+    -webkit-box-shadow: 0px 0px 2px #000;
+            box-shadow: 0px 0px 2px #000; }
   @media only screen and (max-width: 850px) {
     body p {
       width: 65%; }
     body p.center {
       left: 25%; } }
-  @media only screen and (max-width: 645px) {
+  @media only screen and (max-width: 600px) {
     body p {
-      width: 85%; }
+      width: 100%;
+      height: 100%; }
     body p.center {
-      left: 15%; }
+      left: 5%; }
+    body p.center.showDescription {
+      width: 100% !important;
+      left: 5% !important;
+      height: 120%;
+      top: -15%; }
+      body p.center.showDescription .content {
+        height: 93%; }
     body img {
       max-width: 95%;
       max-height: 30%; }
-    body .thumb {
+    body .thumb, body p.right, body p.left {
       display: none !important; }
-    body p.right {
-      display: none !important; }
-    body p.left {
-      display: none !important; } }
+    body p::before, body p::after {
+      -webkit-transition: all .8s ease;
+              transition: all .8s ease;
+      content: ' ';
+      display: block;
+      background-color: #ddd;
+      width: 100%;
+      height: 10px; } }
+  @media only screen and (max-width: 400px) {
+    body p.center {
+      top: 0%;
+      height: 90%; } }
 

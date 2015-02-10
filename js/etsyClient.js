@@ -282,6 +282,87 @@
                 
             })
 
+            ///////////////
+            //
+            $(function() {
+                // Bind the swipeHandler callback function to the swipe event on div.box
+                $( "p" ).off('swipeleft , swiperight')
+                .on( "swipeleft", function( event ) {
+                    console.log('swipeleft')
+                    event.preventDefault();
+                    self.currentListing++;
+                    self.reDraw();                    // $( event.target ).addClass( "swipe" );
+                    if (self.currentListing+4 > self.active.length)
+                        self.lazyLoad(1).then(function(){
+                            self.reDraw()
+                        });
+                })
+                .on( "swiperight", function( event ){console.log('yaaay')
+                    console.log('swiperight')
+                    if(self.currentListing<1)
+                        return;
+                    event.preventDefault();
+                    self.currentListing--;
+                    self.reDraw();                    // $( event.target ).addClass( "swipe" );
+                });
+
+                $('.thumb').off().on('click' , function() {
+                    
+                    // do a little cashing so we don't keep looking up this info.
+                    var thumb   = $(this) ,
+                        id = thumb.attr('listing');
+
+                    // add the "loading" class to stretch the thumb image while the large size loads
+                    $('#banner-' + id)
+                        .attr('src' , thumb.attr('src'))
+                        .addClass('loading');
+
+                    // this is an optional banner that indicates the image is loading- so
+                    // the user doesn't think an error has occured if the large size takes forever.
+                    $('.message.' + id ).addClass('loading');
+
+                    $('#banner-' + id)
+                        .attr('src' , thumb.attr('big')) // we will find the url for our large size tucked away as an attribute on the thumb
+                        .on('load' , function() {
+
+                            // once the large size is downloaded, clean up our temporary classes.
+                            $('.message.' + id ).removeClass('loading');
+                            $(this).removeClass('loading');
+
+                        });
+                });
+                
+                $('.close').off().on('click' , function(event){
+                    console.log('closeit')
+                    // if(!listing)return;
+                    event.stopPropagation();
+                    $('.showDescription').removeClass('showDescription');
+                    $('.thumb').hide();
+                    try{
+                        BlazinEtsy.Router.navigate( 'listing/' + listing.listing_id , {trigger: false});
+                    }catch(e){}
+                });
+
+                ///////////////
+                //
+                self.active.forEach(function(active) {
+                    var node = active.node
+                    $('#banner-' + node.attr('listing')).off().on('click' ,function(event) {
+
+                        if (!this.parentNode.parentNode.className.match('showDescription'))//||
+                            return
+
+                        event.stopPropagation();
+
+                        $('.bannerBack.' + node.attr('listing')).toggleClass('bannerFull');
+                        $(this).toggleClass('bannerFull');
+                    });
+                })
+                //
+                ///////////////
+            });
+            //
+            ///////////////
             this.active.forEach(function(active) {
                 
                 if (!active || !listing)return; // I don't fucking know...
@@ -343,7 +424,7 @@
             if (qty)
                 this.toLoad += qty;
 
-            $.getJSON(url).then(function(p) {
+            var first = $.getJSON(url).then(function(p) {
                 
                 p.results.map(function(l) {
 
@@ -367,12 +448,14 @@
 
             else
                 this.noMoreLoad.resolve();
+            
+            return first;
 
         },
         showDescription : function(){
             
             // modify the layout of the listing to allow a larger view and scrollability.
-            $('.center').addClass('showDescription');
+            $('.center , .center>.close').addClass('showDescription');
 
             // shift the thumbnails to the left so they can animate in, then make them visible.
             $('.thumb.' + $('.center').attr('listing')).addClass('thumbsLeft').show();
@@ -402,55 +485,12 @@
             ///////////////
             //
 
-            $('.thumb').hide().click(function() {
-                
-                // do a little cashing so we don't keep looking up this info.
-                var thumb   = $(this) ,
-                    listing = thumb.attr('listing');
+            $('.thumb').hide()
+            $('.message').removeClass('loading');
 
-                // add the "loading" class to stretch the thumb image while the large size loads
-                $('#banner-' + listing)
-                    .attr('src' , thumb.attr('src'))
-                    .addClass('loading');
-
-                // this is an optional banner that indicates the image is loading- so
-                // the user doesn't think an error has occured if the large size takes forever.
-                $('.message.' + listing ).addClass('loading');
-
-                $('#banner-' + listing)
-                    .attr('src' , thumb.attr('big')) // we will find the url for our large size tucked away as an attribute on the thumb
-                    .on('load' , function() {
-
-                        // once the large size is downloaded, clean up our temporary classes.
-                        $('.message.' + listing ).removeClass('loading');
-                        $(this).removeClass('loading');
-
-                    });
-            });
-
-            //
-            ///////////////
-
-
-            $('#quickView').css({zIndex:0})
             this.active.forEach(function(obj , index) {
 
                 var node = obj.node;
-            
-                ///////////////
-                //
-                $('#banner-' + node.attr('listing')).off().on('click' ,function(event) {
-
-                    if (!this.parentNode.parentNode.className.match('showDescription'))//||
-                        return
-
-                    event.stopPropagation();
-
-                    $('.bannerBack.' + node.attr('listing')).toggleClass('bannerFull');
-                    $(this).toggleClass('bannerFull');
-                });
-                //
-                ///////////////
 
                 // hopefully only accessing only 11 cards at a time will reduce resource seepage (If I have a milkshake...)
                 if ((index>self.currentListing && index-self.currentListing<=5) ||
@@ -502,6 +542,8 @@
 
                     self.Router.navigate("listing/" + node.attr('listing') , {trigger: false});
 
+                    // $($('.close')[index]).css({opacity:1})
+
                     node.addClass('center')
                         .css({
                             position:'absolute' ,
@@ -529,22 +571,6 @@
         },
         createEvents : function(){
             
-            $(function() {
-                // Bind the swipeHandler callback function to the swipe event on div.box
-                $( "*" )
-                .on( "swipeleft", function( event ) {
-                    event.preventDefault();
-                    self.currentListing++;
-                    self.reDraw();                    // $( event.target ).addClass( "swipe" );
-                    if (self.currentListing+4 > self.active.length)
-                        self.lazyLoad(1);
-                })
-                .on( "swiperight", function swipeHandler( event ){
-                    event.preventDefault();
-                    self.currentListing--;
-                    self.reDraw();                    // $( event.target ).addClass( "swipe" );
-                });
-            });
 
             var self = this;
             
@@ -562,6 +588,7 @@
 
                     if(self.currentListing<1)
                         return;
+
                     self.currentListing--;
                     self.reDraw();
 
