@@ -32,7 +32,7 @@
         var events = getAllEvents(document)
         // console.log(events.match('ontouchstart'))
 
-        this.touchstartEventName = events.match('ontouchstart')?'touchstart':'mousedown';
+        this.touchstartEventName = events.match('touch')?'touchstart':'mousedown';
 
         this.pagination = {
             
