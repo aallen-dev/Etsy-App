@@ -32,7 +32,7 @@
         var events = getAllEvents(document)
         // console.log(events.match('ontouchstart'))
 
-        this.touchstartEventName = events.match('touch')?'touchstart':'mousedown';
+        this.touchstartEventName = 'ontouchstart' in window?'touchstart':'mousedown';
 
         this.pagination = {
             
@@ -368,7 +368,7 @@
                     $('#banner-' + node.attr('listing'))
                         .off()
                         .on(self.touchstartEventName ,function(event) {
-                            alert(self.touchstartEventName+'d')
+                            alert(self.touchstartEventName+'c')
                             if (!this.parentNode.parentNode.className.match('showDescription'))//||
                                 return
 
